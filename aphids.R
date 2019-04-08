@@ -5,7 +5,7 @@ library(pegas)
 
 #read in fasta
 
-aphids<- read.FASTA("C:/Users/acahill/Desktop/aphidstrimmed.fasta")
+aphids<- read.FASTA("C:/Users/acahill/Documents/Github/aphids/aphidsloc.fasta")
 
 #paired distance matrix
 dist.dna(aphids)
@@ -28,3 +28,12 @@ aphidsNet <- haploNet(aphids_haplo)
 
 #plot the network
 plot(aphidsNet, size = attr(aphidsNet, "freq"), fast = FALSE)
+
+#now get colors on the piechart
+aphidhaps<-read.table("C:/Users/acahill/aphidhaps.txt",header=TRUE)
+aphidmatrix<-as.matrix(aphidhaps)
+aphidmatrix2<-aphidmatrix[,2:3]
+
+plot(aphidsNet, size=attr(aphidsNet, "freq"),fast=FALSE, scale.ratio = 2, cex = 0.5, pie=aphidmatrix2)
+
+legend("bottomleft", c("Pennsylvania","Michigan"), text.col=2:5)
