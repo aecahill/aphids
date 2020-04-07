@@ -1,0 +1,116 @@
+---
+title: "Aphids"
+author: "Abigail Cahill"
+date: "4/7/2020"
+output: html_document
+---
+
+Welcome to the R programming language! This is RStudio - the program we will be using to write and run our R code and analyses. We are using R because it is a powerful language and program that can run our statistics (like t-tests) and population genetic analyses, as well as writing code and scripts to do more complex, repeatable analyses.
+
+
+For now, just focus on this box, in the upper left corner of the program.
+
+There are a lot of different ways to use R and to write R code. We will be using the type of document you're reading right now, called RMarkdown. This is just another type of text file - like .doc is a Word document, or .txt is a plain text file. RMarkdown (.Rmd) lets you combine R code with other text. This is useful for our class, because we can write explanations, notes, and questions in the same place that we write our code. Right now, you're reading the text part of an .Rmd. R code goes in designated boxes, like the one below:
+
+```{r}
+
+```
+
+Lines 15 and 17 indicate the start and finish of a section of code. Every time we want to write more code, we make a new code box, or 'chunk'. Try that right now by going up to the menu bar at the top, and clicking Code -> Insert Chunk. (Notice that the chunk appears wherever you've last clicked in the document.)
+
+For now you will be running or modifying code that I write for you.
+
+## How do I make the code do anything?
+
+Before you start writing any code, you are going to get some practice in running pre-existing code and changing small parts of that code. When you type code, nothing happens immediately - it's just like typing words into any document. To make the code do whatever it is supposed to do, you have to *run* it.
+
+Below is a chunk with a line of code that you will be using a lot. This line imports a dataset that we will be analyzing. Look at the box below, and click the green arrow in the top right corner of the box. That arrow *runs* all the code within that chunk.
+
+
+```{r pressure, echo=FALSE}
+greeting<-c("hello world")
+greeting
+```
+
+## So what did that code DO, exactly?
+
+The code came in two lines. Let's look at the first one first, left to right.
+
+greeting<-c("hello world")
+
+When we typed 'greeting', we told R to make an *object* named greeting. Objects in R contain information - numbers, tables, images, whatever. 
+
+Now we have to tell R what information we want to store in the 'greeting' object. To do that, we use the assignment arrow:
+
+<-
+
+Now we can tell R what information we are *assigning* to 'greeting'.
+
+In this case I told R to assign the words "hello world" to the object 'greeting'. I used quotation marks so that R recognizes this as a single item.
+
+The second line of code asks R to print the results of the object 'greeting', which gives us "hello world". Let's put that together and try again (hit the green arrow in the chunk below):
+
+```{r}
+greeting<-c("hello world")
+greeting
+```
+
+Try modifying the code chunk below to use a different word or phrase in place of "hello world", and run that chunk of code.
+```{r}
+greeting<-c("hello world")
+greeting
+```
+
+
+## Ok, let's do some data analysis of the aphids.
+
+Now that you have some practice using R, let's try analyzing your aphid data. Run the chunk of code below to load the package that you will need for this analysis.
+
+```{r}
+library(ape)
+```
+
+The package name is "ape" (short for Analyses of Phylogenetics and Evolution) and by using the "library" command we told the program to load it so we can use it. 
+
+Now we need to load in the aphid datafile. I took the 3 sequences that you said were aphids based on your BLAST analysis and combined them with Katie's data from last year. Let's call that file up.
+
+```{r}
+aphids<- read.FASTA("C:/Users/aecsk/Desktop/aphids.fasta")
+```
+
+The right part of that code reads in a FASTA file (the DNA sequence file format) from the address where it is located - for today, it's in the Cloud but if you work with the data on your computer you would call it from a particular part of your computer drive.
+
+These next three lines of code will take the sequences, figure out how similar they are to each other, and turn them into a phylogenetic tree:
+
+```{r}
+dist.dna(aphids)
+treeaphids<-bionj(dist.dna(aphids))
+plot.phylo(treeaphids)
+```
+
+You should now have a phylogenetic tree where each aphid is indicated using its population name. 
+
+Now we're going to try to make a pie chart of different haplotypes. Run the code below by hitting the green arrow:
+```{r}
+library(pegas)
+aphids_haplo<-haplotype(aphids)
+aphids_haplo
+
+#make a network
+aphidsNet <- haploNet(aphids_haplo)
+
+#plot the network
+plot(aphidsNet, size = attr(aphidsNet, "freq"), fast = F, show.mutation=0)
+
+#now get colors on the network
+aphidhaps<-read.table("C:/Users/aecsk/Documents/GitHub/aphids/aphidhaps2020.txt",header=TRUE)
+aphidmatrix<-as.matrix(aphidhaps)
+aphidmatrix2<-aphidmatrix[,2:5]
+
+plot(aphidsNet, size=attr(aphidsNet, "freq"),fast=FALSE, show.mutation=0, scale.ratio = 0.25, cex = 0.5, pie=aphidmatrix2)
+
+legend("bottomleft", c("Pennsylvania","Albion","South Haven","Saut Ste Marie"), text.col=c("red","cyan","green","black"))
+
+```
+
+We can talk a bit about what this is doing later - but you should wind up with a graph that shows which populations each of the different haplotypes (mitochondrial genotypes) are from.
