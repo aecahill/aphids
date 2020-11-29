@@ -79,3 +79,27 @@ ggplot(aphidsfallnz,aes(Height_cm,AvgAphidsPerLeaf))+
   theme(axis.title.y=element_text(size=16))+
   xlab("\nPlant Height (cm)")+ylab("Aphid Density\n")
 
+
+#analysis with caterpillars
+
+cats<-read.table("C:/Users/aecsk/OneDrive/Desktop/cats.txt",header=T)
+
+t.test(cats$AvgAphidsPerLeaf~cats$NumCaterpillars)
+
+#graph by caterpillars or no
+ggplot(cats, aes(color = Region,y=AvgAphidsPerLeaf,x=NumCaterpillars)) + 
+  geom_jitter(position=position_jitter(0.2),alpha = 0.75, cex=3)+
+  #geom_boxplot(alpha=0.5)+
+  scale_color_manual(values=c("gold","purple"))+
+  #stat_summary(fun.y=mean, geom="point", shape=18,size=5, color="black")+
+  #stat_summary(fun.data=data_summary, color="red", size=1.5)+
+  labs(x ="Caterpillars", y = "Aphid Density")+
+  theme_bw()+
+  #theme(legend.position="none")+
+  theme(panel.background = element_blank(), 
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        plot.background = element_blank())+
+  theme(axis.text.x = element_text(angle = 65,hjust=1))
+
+
