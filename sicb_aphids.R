@@ -50,6 +50,7 @@ cor.test(aphidsfall$Height_cm,aphidsfall$AvgAphidsPerLeaf)
 #and with no zeroes
 
 cor.test(aphidsfallnz$Height_cm,aphidsfallnz$AvgAphidsPerLeaf)
+cor.test(aphidsfallnz$NumLeaves,aphidsfallnz$AvgAphidsPerLeaf)
 
 ggplot(aphidsfall,aes(Height_cm,AvgAphidsPerLeaf))+
   geom_point(aes(color=Region), alpha = 0.65, size = 4)+
@@ -78,6 +79,20 @@ ggplot(aphidsfallnz,aes(Height_cm,AvgAphidsPerLeaf))+
   theme(axis.title.x=element_text(size=16))+
   theme(axis.title.y=element_text(size=16))+
   xlab("\nPlant Height (cm)")+ylab("Aphid Density\n")
+
+ggplot(aphidsfallnz,aes(NumLeaves,AvgAphidsPerLeaf))+
+  geom_point(aes(color=Region), alpha = 0.65, size = 4)+
+  theme_bw()+
+  theme(panel.background = element_blank(), 
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        plot.background = element_blank())+
+  scale_colour_manual(values=c("gold","purple"))+
+  theme(axis.text.x= element_text(size=16))+
+  theme(axis.text.y= element_text(size=16))+
+  theme(axis.title.x=element_text(size=16))+
+  theme(axis.title.y=element_text(size=16))+
+  xlab("\nNumber of Leaves")+ylab("Aphid Density\n")
 
 
 #analysis with caterpillars
