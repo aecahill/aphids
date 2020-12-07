@@ -118,3 +118,44 @@ ggplot(cats, aes(color = Region,y=AvgAphidsPerLeaf,x=NumCaterpillars)) +
   theme(axis.text.x = element_text(angle = 65,hjust=1))
 
 
+##2019 data
+
+aphids2019<-read.table("C:/Users/aecsk/OneDrive/Desktop/aphids2019.txt",header=T)
+
+ggplot(aphids2019,aes(AvgAphidsPerLeaf,NumLeaves,color=Region))+
+  geom_point(alpha = 0.65, size = 4)+
+  geom_smooth(method='lm',se=F)+
+  theme_bw()+
+  theme(panel.background = element_blank(), 
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        plot.background = element_blank())+
+  scale_colour_manual(values=c("gold"))+
+  theme(axis.text.x= element_text(size=16))+
+  theme(axis.text.y= element_text(size=16))+
+  theme(axis.title.x=element_text(size=16))+
+  theme(axis.title.y=element_text(size=16))+
+  theme(legend.position = "none") +
+  xlab("\nNumber of Leaves")+ylab("Aphid Density\n")+
+  facet_wrap(~ Week)
+
+#no zeros 2019 only
+
+aphids2019nz<-read.table("C:/Users/aecsk/OneDrive/Desktop/aphids2019nz.txt",header=T)
+
+ggplot(aphids2019nz,aes(AvgAphidsPerLeaf,Height_cm,color=Region))+
+  geom_point(alpha = 0.65, size = 4)+
+  geom_smooth(method='lm',se=F)+
+  theme_bw()+
+  theme(panel.background = element_blank(), 
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        plot.background = element_blank())+
+  scale_colour_manual(values=c("gold"))+
+  theme(axis.text.x= element_text(size=16))+
+  theme(axis.text.y= element_text(size=16))+
+  theme(axis.title.x=element_text(size=16))+
+  theme(axis.title.y=element_text(size=16))+
+  theme(legend.position = "none") +
+  xlab("\nPlant Height (cm)")+ylab("Aphid Density\n")+
+  facet_wrap(~ Week)
