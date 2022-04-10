@@ -1,0 +1,56 @@
+---
+title: "Aphids"
+author: "Abigail Cahill"
+date: "4/7/2020"
+output: html_document
+---
+Run the chunk of code below to load the package that you will need for this analysis.
+
+```{r}
+library(ape)
+```
+
+The package name is "ape" (short for Analyses of Phylogenetics and Evolution) and by using the "library" command we told the program to load it so we can use it. 
+
+Now we need to load in the aphid datafile. I took the 3 sequences that you said were aphids based on your BLAST analysis and combined them with Katie's data from last year. Let's call that file up.
+
+```{r}
+aphids<- read.FASTA("C:/Users/aecsk/Documents/GitHub/aphids/aphids.fasta")
+```
+
+The right part of that code reads in a FASTA file (the DNA sequence file format) from the address where it is located - for today, it's in the Cloud but if you work with the data on your computer you would call it from a particular part of your computer drive.
+
+These next three lines of code will take the sequences, figure out how similar they are to each other, and turn them into a phylogenetic tree:
+
+```{r}
+dist.dna(aphids)
+treeaphids<-bionj(dist.dna(aphids))
+plot.phylo(treeaphids)
+```
+
+You should now have a phylogenetic tree where each aphid is indicated using its population name. 
+
+Now we're going to try to make a pie chart of different haplotypes. Run the code below by hitting the green arrow:
+```{r}
+library(pegas)
+aphids_haplo<-haplotype(aphids)
+aphids_haplo
+
+#make a network
+aphidsNet <- haploNet(aphids_haplo)
+
+#plot the network
+plot(aphidsNet, size = attr(aphidsNet, "freq"), fast = F, show.mutation=0)
+
+#now get colors on the network
+aphidhaps<-read.table("C:/Users/aecsk/Documents/GitHub/aphids/aphidhaps2020.txt",header=TRUE)
+aphidmatrix<-as.matrix(aphidhaps)
+aphidmatrix2<-aphidmatrix[,2:5]
+
+plot(aphidsNet, size=attr(aphidsNet, "freq"),fast=FALSE, show.mutation=0, scale.ratio = 0.25, cex = 0.5, pie=aphidmatrix2)
+
+legend("bottomleft", c("Pennsylvania","Albion","South Haven","Saut Ste Marie"), text.col=c("red","cyan","green","black"))
+
+```
+
+We can talk a bit about what this is doing later - but you should wind up with a graph that shows which populations each of the different haplotypes (mitochondrial genotypes) are from.
