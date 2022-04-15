@@ -15,7 +15,7 @@ The package name is "ape" (short for Analyses of Phylogenetics and Evolution) an
 Now we need to load in the aphid datafile. I took the 3 sequences that you said were aphids based on your BLAST analysis and combined them with Katie's data from last year. Let's call that file up.
 
 ```{r}
-aphids<- read.FASTA("C:/Users/aecsk/Documents/GitHub/aphids/aphids.fasta")
+aphids<- read.FASTA("C:/Users/aecsk/Documents/GitHub/aphids/aphids2022.fasta")
 ```
 
 The right part of that code reads in a FASTA file (the DNA sequence file format) from the address where it is located - for today, it's in the Cloud but if you work with the data on your computer you would call it from a particular part of your computer drive.
@@ -43,13 +43,13 @@ aphidsNet <- haploNet(aphids_haplo)
 plot(aphidsNet, size = attr(aphidsNet, "freq"), fast = F, show.mutation=0)
 
 #now get colors on the network
-aphidhaps<-read.table("C:/Users/aecsk/Documents/GitHub/aphids/aphidhaps2020.txt",header=TRUE)
+aphidhaps<-read.table("C:/Users/aecsk/Documents/GitHub/aphids/aphidhaps2022.txt",header=TRUE)
 aphidmatrix<-as.matrix(aphidhaps)
-aphidmatrix2<-aphidmatrix[,2:5]
+aphidmatrix2<-aphidmatrix[,2:6]
 
-plot(aphidsNet, size=attr(aphidsNet, "freq"),fast=FALSE, show.mutation=0, scale.ratio = 0.25, cex = 0.5, pie=aphidmatrix2)
+plot(aphidsNet, size=attr(aphidsNet, "freq"),fast=FALSE, show.mutation=0, scale.ratio = 0.1, cex = 0.5, pie=aphidmatrix2)
 
-legend("bottomleft", c("Pennsylvania","Albion","South Haven","Saut Ste Marie"), text.col=c("red","cyan","green","black"))
+legend("bottomleft", c("Pennsylvania","Albion","South Haven","Saut Ste Marie", "Holland"), text.col=c("red","cyan","green","black","purple"))
 
 ```
 
