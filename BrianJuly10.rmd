@@ -1,0 +1,58 @@
+---
+title: "Instructions for Brian July 11"
+output: html_document
+---
+
+This is code to run population genetic analyses on the aphid data. You will need to make a FASTA file with the new aphid sequences and the old aphid sequences as an alignment. To do that, follow my instructions from another document.
+
+I am writing this code to run with the alignment that we made in the spring. First, load the packages you will need for the code. 
+
+```{r}
+library(ape)
+library(ips)
+library(seqinr)
+library(haplotypes)
+```
+
+Then, read in the alignment file. When you are ready to use your new file, you will alter the code in this chunk. OR, you can just practice with the file from spring.
+
+```{r}
+aphids<-as.DNAbin(read.alignment("C:/Users/aecsk/Desktop/aphids.aln", format="clustal"))
+```
+
+The next step will to be to trim the alignment to get rid of the ends where there are many sequences with no base pairs.
+
+```{r}
+aphidstrim<-trimEnds(aphids,min.n.seq=15) 
+```
+
+Ok, now we can use this alignment to make a phylogenetic tree, like you did in April. These next three lines of code will take the sequences, figure out how similar they are to each other, and turn them into a phylogenetic tree:
+
+```{r}
+dist.dna(aphidstrim)
+treeaphids<-bionj(dist.dna(aphidstrim))
+plot.phylo(treeaphids)
+```
+
+You should now have a phylogenetic tree where each aphid is indicated using its population name. 
+
+
+Next step: finding what haplotypes are present in each population.
+
+This code will give you a list of haplotypes and which individuals have each haplotype. SAVE THE RESULT in a file somewhere - I'm not sure how we will use it but you should have a table where haplotypes are the rows, populations are the columns, and the number of individuals with each haplotype are the entries. If that doesn't make sense, just copy and paste the result into a word doc and we can put it together later.
+```{r}
+aphidshaps<-haplotype(as.dna(aphidstrim))
+```
+
+Last thing for now - calculate the genetic distance between the populations. First, you will have to make a vector of the populations. This means a list of the population names, IN THE ORDER the individuals appear. This is the vector for the spring data. You will have to change it to add individuals from the summer sampling.
+```{r}
+aphidpops<-c("H", "A", "H", "P", "P", "P", "P", "S", "A", "P", "P", "P", "P", "P", "P", "P", "P", "P", "P", "S", "SM")  #I have used H for Holland, P for Pennsylvania, A for Albion, S for South Haven, SM for Sault Ste Marie
+```
+
+Now, calculate the genetic distance:
+
+```{r}
+pairPhiST(as.dna(aphidstrim),populations=aphidpops)
+```
+
+Again, copy-paste these results into a document to save them. You should see two tables as results, and save both of them.
