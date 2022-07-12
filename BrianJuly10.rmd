@@ -17,7 +17,7 @@ library(haplotypes)
 Then, read in the alignment file. When you are ready to use your new file, you will alter the code in this chunk. OR, you can just practice with the file from spring.
 
 ```{r}
-aphids<-as.DNAbin(read.alignment("C:/Users/aecsk/Desktop/aphids.aln", format="clustal"))
+aphids<-read.dna("C:/Users/aecsk/Desktop/spring.aln",format="clustal")
 ```
 
 The next step will to be to trim the alignment to get rid of the ends where there are many sequences with no base pairs.
