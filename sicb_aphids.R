@@ -1,7 +1,7 @@
 library(ggplot2)
 
 #read in data for fall only
-aphidsfall<-read.table("C:/Users/aecsk/OneDrive/Desktop/aphidsfall.txt",header=T)
+aphidsfall<-read.table("C:/Users/aecsk/Documents/GitHub/aphids/aphidsfall.txt",header=T)
 
 #calculate stats by region
 summary(aov(aphidsfall$AvgAphidsPerLeaf~aphidsfall$Region))
