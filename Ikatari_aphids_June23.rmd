@@ -1,0 +1,68 @@
+---
+title: "Instructions for Ikatari June 23"
+output: html_document
+---
+
+This is code to run population genetic analyses on the aphid data. You will need to make a FASTA file with your sequences.
+
+First, load the packages you will need for the code. 
+
+```{r}
+library(ape)
+library(ips)
+library(seqinr)
+library(haplotypes)
+library(pegas)
+```
+
+Then, read in the alignment file. When you are ready to use your new file, you will alter the code in this chunk.
+
+```{r}
+
+aphids<-read.FASTA("C:/Users/aecsk/Documents/GitHub/aphids/aphidsJune23.fas") #change the green text to match your file path
+
+```
+
+The next step will to be to trim the alignment to get rid of the ends where there are many sequences with no base pairs. I've guessed at 30 for the parameter here - we may alter this number slightly.
+
+```{r}
+aphidstrim<-trimEnds(as.matrix(aphids),min.n.seq=30) 
+```
+
+Ok, now we can use this alignment to make a phylogenetic tree, like you did in April. These next three lines of code will take the sequences, figure out how similar they are to each other, and turn them into a phylogenetic tree:
+
+```{r}
+dist.dna(aphidstrim)
+treeaphids<-bionjs(dist.dna(aphidstrim))
+plot.phylo(treeaphids)
+```
+
+You should now have a phylogenetic tree where each aphid is indicated using its population name. 
+
+
+Next step: finding what haplotypes are present in each population.
+
+This code will give you a list of haplotypes and which individuals have each haplotype. SAVE THE RESULT in a file somewhere - I'm not sure how we will use it but you should have a table where haplotypes are the rows, populations are the columns, and the number of individuals with each haplotype are the entries. If that doesn't make sense, just copy and paste the result into a word doc and we can put it together later.
+```{r}
+haplotype(as.dna(aphidstrim))
+```
+
+Last thing for now - calculate the genetic distance between the populations. First, you will have to make a vector of the populations, which is the names of the populations in the order they appear in the FASTA file.
+```{r}
+aphidpops<-names(aphids)  
+```
+
+Now, calculate the genetic distance:
+
+```{r}
+pairPhiST(as.dna(aphidstrim),populations=aphidpops)
+```
+
+Again, copy-paste these results into a document to save them. You should see two tables as results, and save both of them.
+
+Now we'll calculate nucleotide diversity (pi) for all of the sequences - save this number somewhere.
+
+```{r}
+nuc.div(aphids)
+```
+
