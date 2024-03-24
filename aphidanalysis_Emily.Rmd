@@ -1,0 +1,148 @@
+---
+title: "Milkweed Summer 2022 Albion Analyses"
+author: "EJR"
+date: "2024-03-24"
+output: html_document
+---
+
+Libraries
+```{r}
+library(tidyverse)
+library(lme4)
+library(lmerTest)
+library(car)
+```
+
+Data import
+```{r}
+#aphid data
+#note this copy of the data manually fixed an error in the mean seeds per pod for plant 19 that was caused by pods 7-9 of this plant all being entered as a total count for a single pod; that may or may not have been fixed in other files
+aphids <- read.csv("aphids_seeds_2022.csv")
+str(aphids)
+aphids$Plant <- as.factor(aphids$Plant)
+aphids$Location <- as.factor(aphids$Location)
+aphids$Aphids <- as.factor(aphids$Aphids)
+aphids$Aphids_end <- factor(ifelse(aphids$Aphid_num_end<1,"N", "Y")) #binary y/n ending aphids
+aphids <- aphids %>% mutate(Aphids_end_cat = case_when(Aphid_num_end == "0" ~ "None", between(Aphid_num_end,1,49) ~"Few", between(Aphid_num_end,50,10000) ~ "Many"))
+aphids$Aphids_end_cat <- factor(aphids$Aphids_end_cat, levels = c("None", "Few", "Many"))
+
+
+#seed mass
+#plant 19 had an entry for total seed mass for pods 7 through 9 combined.  For here, individual values for each of pods 7 thru 9 were imputed as each being 1/3 of that total (before import)
+
+mass <- read.csv("seedmass.csv")
+mass$Plant <- as.factor(mass$Plant)
+
+mass_by_plant <- mass %>%
+  group_by(Plant) %>%
+  summarize(TotalSeedMass = sum(Total_seedmass_g), MeanSeedMassPerPod = mean(Total_seedmass_g))
+
+
+#join
+all_data <- full_join(aphids, mass_by_plant, by = "Plant")
+```
+
+
+Data summary
+```{r}
+#summary table of number of plants in started with aphids y/no that ended with none/few/many
+
+aphidcountsummary <- aphids %>%
+  group_by(Aphids, Aphids_end_cat)%>%
+  summarize(Count = n())
+```
+
+
+Figures
+```{r}
+#total seeds for plants with and without aphids separated by whether or not they started with aphids
+
+ggplot(aphids, aes(x = Aphids_end_cat, y = Total_seeds, color = Aphids)) + geom_point(size = 6, alpha = 0.3)
+#or
+ggplot(aphids, aes(x = Aphids_end_cat, y = Total_seeds)) + geom_point(size = 6, alpha = 0.3) + facet_grid(~Aphids)
+
+
+
+#seeds per pod for plants with and without aphids separated by whether or not they started with aphids
+ggplot(aphids, aes(x = Aphids_end_cat, y = MeanSeedsPerPod)) + geom_point(size = 6, alpha = 0.3) + facet_grid(~Aphids)
+
+ggplot(aphids, aes(x = Aphids_end_cat, y = MeanSeedsPerPod, color = Aphids)) + geom_point(size = 6, alpha = 0.3) + facet_grid(~Location)
+
+
+
+# relationship between plant height and seeds
+ggplot(aphids, aes(x = Height_start, y = MeanSeedsPerPod, color = Location)) + geom_point(size = 6, alpha = 0.3)
+
+ggplot(aphids, aes(x = Height_start, y = Total_seeds, color = Location)) + geom_point(aes(size = Pod_num_end), alpha = 0.3)
+
+
+ggplot(all_data, aes(x = Height_start, y = MeanSeedMassPerPod, color = Location)) + geom_point(aes(size = Pod_num_end), alpha = 0.3)
+
+ggplot(all_data, aes(x = Height_start, y = TotalSeedMass, color = Location)) + geom_point(aes(size = Pod_num_end), alpha = 0.3)
+
+
+#total seed mass for plants with and without aphids
+ggplot(all_data, aes(x = Aphids_end_cat, y = TotalSeedMass, color = Aphids)) + geom_point(size = 6, alpha = 0.3) + facet_grid(~Location)
+
+
+#seed mass per pod for plants with and without aphids
+
+ggplot(all_data, aes(x = Aphids_end_cat, y = MeanSeedMassPerPod, color = Aphids)) + geom_point(size = 6, alpha = 0.3) + facet_grid(~Location)
+```
+
+Stats
+```{r}
+#within each ending group (aphids y v aphids n), confirm that there is no difference in total or mean seeds between starting aphids y v aphids n
+
+starty <- aphids %>% filter(Aphids=="Y")
+startn <- aphids %>% filter(Aphids=="N")
+
+t.test(Total_seeds~Aphids_end, data = starty)
+t.test(Total_seeds~Aphids_end, data = startn)
+
+#starting status doesn't affect outcome based on ending status, so we'll just work with ending aphid status going forward
+
+
+
+#Fixed model attempts - we probably want these
+m1 <- lm(Total_seeds ~ Aphids_end + Location, data = aphids)
+Anova(m1, type = "III")
+
+
+m2 <- lm(MeanSeedsPerPod ~ Aphids_end + Location, data = aphids)
+Anova(m2, type = "III")
+
+
+m3 <- lm(TotalSeedMass ~ Aphids_end + Location, data = all_data)
+Anova(m3, type = "III")
+
+
+m4 <- lm(MeanSeedMassPerPod ~ Aphids_end + Location, data = all_data)
+Anova(m4, type = "III")
+m4 
+
+
+
+
+
+#Mixed model attempts - probably not justified with just 2 levels in the random factor; several other issues???
+mm1 <- lmerTest::lmer(Total_seeds ~ Aphids_end + (1|Location), data = aphids)
+mm1
+summary(mm1)
+anova(mm1)
+
+mm2 <- lmerTest::lmer(MeanSeedsPerPod ~ Aphids_end + (1|Location), data = aphids)
+mm2
+summary(mm2)
+anova(mm2)
+
+
+#separate analyses for each site, total seeds - sanity check
+
+mSCI <- lm(Total_seeds ~ Aphids_end, data = filter(aphids, Location == "SCI"))
+anova(mSCI)
+
+mWNC <- lm(Total_seeds ~ Aphids_end, data = filter(aphids, Location == "WNC"))
+anova(mWNC)
+
+```
