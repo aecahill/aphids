@@ -11,6 +11,8 @@ library(tidyverse)
 library(lme4)
 library(lmerTest)
 library(car)
+library(cowplot)
+library(olsrr)
 ```
 
 Data import
@@ -161,7 +163,17 @@ Anova(m4, type = "III")
 m4 
 
 
+# adding normality checks, May 13
 
+ols_test_normality(m1)
+ols_test_normality(m2)
+ols_test_normality(m3)
+ols_test_normality(m4)
+
+ols_plot_resid_qq(m1)
+ols_plot_resid_qq(m2)
+ols_plot_resid_qq(m3)
+ols_plot_resid_qq(m4)
 
 
 #Mixed model attempts - probably not justified with just 2 levels in the random factor; several other issues???

@@ -2,6 +2,7 @@
 
 library(ggplot2)
 library(cowplot)
+library(olsrr)
 
 #read in data for fall only
 aphidsfall21<-read.table("C:/Users/aecsk/Documents/GitHub/aphids/aphidsfall21.txt",header=T)
@@ -34,8 +35,13 @@ aphidsfallnz21<-read.table("C:/Users/aecsk/Documents/GitHub/aphids/aphidsfallnoz
 
 summary(aov(aphidsfallnz21$AvgAphidsPerLeaf~aphidsfallnz21$Region))
 
+
+
 #and with total aphid count
 summary(aov(aphidsfallnz21$total_aphids~aphidsfallnz21$Region))
+
+#Ok, the data are hella non-normal, let's do a mann-whitney
+wilcox.test(aphidsfallnz21$total_aphids~aphidsfallnz21$Region)
 
 ggplot(aphidsfallnz21, aes(color = Region,y=total_aphids,x=Region)) + 
   geom_jitter(position=position_jitter(0.2),cex=3)+
@@ -59,10 +65,10 @@ cor.test(aphidsfall21$NumLeaves,aphidsfall21$total_aphids)
 
 #and with no zeroes
 
-cor.test(aphidsfallnz21$Height_cm,aphidsfallnz21$total_aphids)
-cor.test(aphidsfallnz21$NumLeaves,aphidsfallnz21$total_aphids)
+cor.test(aphidsfallnz21$Height_cm,aphidsfallnz21$total_aphids,method="spearman")
+cor.test(aphidsfallnz21$NumLeaves,aphidsfallnz21$total_aphids,method="spearman")
 
-height<-ggplot(aphidsfallnz21,aes(Height_cm,total_aphids))+
+height<-ggplot(aphidsfall21,aes(Height_cm,total_aphids))+
   geom_point(aes(color=Region), alpha = 0.65, size = 4)+
   geom_smooth(method='lm',colour="#364156")+
   theme_bw()+
@@ -146,6 +152,7 @@ ggplot(aphidsfallnz21cats, aes(color = Region,y=total_aphids,x=has_cats)) +
   theme(axis.text.x = element_text(angle = 65,hjust=1))
 
 t.test(aphidsfallnz21cats$total_aphids~aphidsfallnz21cats$has_cats)
+wilcox.test(aphidsfallnz21cats$total_aphids~aphidsfallnz21cats$has_cats)
 
 
 # experimental results
@@ -287,3 +294,27 @@ ggplot(aphids22seeds,aes(aphids,as.numeric(Total_seeds)))+
   theme(axis.title.x=element_text(size=16))+
   theme(axis.title.y=element_text(size=16))+
   xlab("\nAphids present")+ylab("Total Seeds\n")
+
+## May 13, checking normality of different things
+#Total aphids by region
+
+total_region<-lm(log(total_aphids) ~ Region, data = aphidsfallnz21)
+ols_plot_resid_qq(total_region)
+ols_test_normality(total_region)
+bartlett.test(log(total_aphids) ~ Region, data = aphidsfallnz21)
+
+total_height<-lm(log(total_aphids) ~ Height_cm, data = aphidsfallnz21)
+ols_plot_resid_qq(total_height)
+ols_test_normality(total_height)
+
+total_leaves<-lm(log(total_aphids) ~ NumLeaves, data = aphidsfallnz21)
+ols_plot_resid_qq(total_leaves)
+ols_test_normality(total_leaves)
+
+
+#Result: normal, proceed wtih parametric on log-transformed total!
+
+summary(aov(lm(log(total_aphids) ~ Region, data = aphidsfallnz21)))
+cor.test(aphidsfallnz21$Height_cm,log(aphidsfallnz21$total_aphids))
+cor.test(aphidsfallnz21$NumLeaves,log(aphidsfallnz21$total_aphids))
+cor.test(aphidsfallnz21$Pods_num,log(aphidsfallnz21$total_aphids))
