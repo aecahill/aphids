@@ -70,17 +70,17 @@ cor.test(aphidsfallnz21$NumLeaves,aphidsfallnz21$total_aphids,method="spearman")
 
 height<-ggplot(aphidsfall21,aes(Height_cm,total_aphids))+
   geom_point(aes(color=Region), alpha = 0.65, size = 4)+
-  geom_smooth(method='lm',colour="#364156")+
+  #geom_smooth(method='lm',colour="#364156")+
   theme_bw()+
   theme(panel.background = element_blank(), 
         panel.grid.major = element_blank(),
         panel.grid.minor = element_blank(),
         plot.background = element_blank())+
   scale_colour_manual(values=c("#FFC000","#4286BE"))+
-  theme(axis.text.x= element_text(size=16))+
-  theme(axis.text.y= element_text(size=16))+
-  theme(axis.title.x=element_text(size=16))+
-  theme(axis.title.y=element_text(size=16))+
+  theme(axis.text.x= element_text(size=12))+
+  theme(axis.text.y= element_text(size=12))+
+  theme(axis.title.x=element_text(size=12))+
+  theme(axis.title.y=element_text(size=12))+
   theme(legend.position="none")+
   xlab("\nPlant Height (cm)")+ylab("Total aphids\n")
 
@@ -92,13 +92,22 @@ leaves<-ggplot(aphidsfallnz21,aes(NumLeaves,total_aphids))+
         panel.grid.minor = element_blank(),
         plot.background = element_blank())+
   scale_colour_manual(values=c("#FFC000","#4286BE"))+
-  theme(axis.text.x= element_text(size=16))+
-  theme(axis.text.y=element_text(size=16))+
-  theme(axis.title.x=element_text(size=16))+
+  theme(axis.text.x= element_text(size=12))+
+  theme(axis.text.y=element_text(size=12))+
+  theme(axis.title.x=element_text(size=12))+
   theme(axis.title.y=element_blank())+
   xlab("\nNumber of Leaves")
 
-plot_grid(height,leaves,ncol=2,labels=c("A","B"))
+#plot_grid(height,leaves,ncol=2,labels=c("A","B"))
+
+ggarrange(
+  height,# First row with line plot
+  # Second row with box and dot plots
+  leaves, 
+  ncol = 2, 
+  labels = c("A" , "B"),
+  common.legend=TRUE,legend="bottom"      # Label of the line plot
+) 
 
 ggplot(aphidsfallnz21,aes(Height_cm,total_aphids))+
   geom_point(aes(color=Region), alpha = 0.65, size = 4)+
