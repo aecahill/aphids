@@ -167,6 +167,7 @@ wilcox.test(aphidsfallnz21cats$total_aphids~aphidsfallnz21cats$has_cats)
 # experimental results
 aphids22<-read.table("C:/Users/aecsk/Documents/GitHub/aphids/aphids22.txt",header=T)
 
+
 cor.test(aphids22$Aphid_num_end,aphids22$Pod_num_end)
 cor.test(aphids22$Aphid_num_end,aphids22$Height)
 
@@ -197,12 +198,14 @@ for (i in rownums){
   has_aphids<-c(has_aphids,b)
 }
 
-aphids22aphids<-cbind(aphids22,has_aphids)
+aphids <- read.csv("aphids_seeds_2022.csv")
+aphids22aphids<-cbind(aphids22,has_aphids,aphids$Leaf_num_start)
+colnames(aphids22aphids)<-c("Plant","Location","Aphids","Pod_num_start","Pod_num_end","Pod_loss","Aphid_num_end","Height","has_aphids","Leaf_num")
 
 t.test(aphids22aphids$Pod_num_end~aphids22aphids$has_aphids)
 t.test(aphids22aphids$Height~aphids22aphids$has_aphids)
 
-pods<-ggplot(aphids22aphids,aes(has_aphids,Pod_num_end,color=has_aphids))+
+pods<-ggplot(aphids22aphids,aes(has_aphids,Pod_num_end))+
   geom_boxplot(outlier.shape=NA)+
   geom_point(alpha = 0.65, size = 4,position=position_jitter(width=0.1, height=0))+
   ylim(0,13)+
@@ -213,13 +216,13 @@ pods<-ggplot(aphids22aphids,aes(has_aphids,Pod_num_end,color=has_aphids))+
         plot.background = element_blank())+
   #scale_colour_manual(values=c("gold","purple"))+
   theme(axis.text.x= element_blank())+
-  theme(axis.text.y= element_text(size=16))+
+  theme(axis.text.y= element_text(size=12))+
   theme(axis.title.x=element_blank())+
-  theme(axis.title.y=element_text(size=16))+
+  theme(axis.title.y=element_text(size=12))+
   xlab("\nAphids present?")+ylab("Pod number\n")+theme(legend.position="none")+
   annotate("text", x = 1.5, y = 12, label = "*", size = 10)
 
-height<-ggplot(aphids22aphids,aes(has_aphids,Height,color=has_aphids))+
+height<-ggplot(aphids22aphids,aes(has_aphids,Height))+
   geom_boxplot(outlier.shape=NA)+
   geom_point(alpha = 0.65, size = 4,position=position_jitter(width=0.1, height=0))+
   theme_bw()+
@@ -228,13 +231,33 @@ height<-ggplot(aphids22aphids,aes(has_aphids,Height,color=has_aphids))+
         panel.grid.minor = element_blank(),
         plot.background = element_blank())+
   #scale_colour_manual(values=c("gold","purple"))+
-  theme(axis.text.x= element_text(size=16))+
-  theme(axis.text.y= element_text(size=16))+
-  theme(axis.title.x=element_text(size=16))+
-  theme(axis.title.y=element_text(size=16))+theme(legend.position="none")+
-  xlab("\nAphids present?")+ylab("Height (cm)\n")
+  theme(axis.text.x= element_text(size=12))+
+  theme(axis.text.y= element_text(size=12))+
+  theme(axis.title.x=element_blank())+
+  #theme(axis.title.x=element_text(size=16))+
+  theme(axis.title.y=element_text(size=12))+theme(legend.position="none")+
+  xlab("\nAphids present?")+ylab("Height (cm)\n")+
+  annotate("text", x = 1.5, y = 140, label = "*", size = 10)
 
-plot_grid(pods,height,ncol=1,labels=c("A","B"))
+
+leaves<-ggplot(aphids22aphids,aes(has_aphids,Leaf_num))+
+  geom_boxplot(outlier.shape=NA)+
+  geom_point(alpha = 0.65, size = 4,position=position_jitter(width=0.1, height=0))+
+  theme_bw()+
+  theme(panel.background = element_blank(), 
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        plot.background = element_blank())+
+  #scale_colour_manual(values=c("gold","purple"))+
+  theme(axis.text.x= element_text(size=12))+
+  theme(axis.text.y= element_text(size=12))+
+  theme(axis.title.x=element_text(size=12))+
+  theme(axis.title.y=element_text(size=12))+theme(legend.position="none")+
+  xlab("\nAphids present?")+ylab("Leaf number\n")+
+annotate("text", x = 1.5, y = 41, label = "*", size = 10)
+
+
+plot_grid(pods,height,leaves,ncol=1,labels=c("A","B","C"))
 
 #ok preliminary seed analysis
 seeds<-read.table("C:/Users/aecsk/Documents/GitHub/aphids/seeds_prelim.txt",header=T)
